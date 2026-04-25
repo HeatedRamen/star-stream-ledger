@@ -73,7 +73,7 @@ public class AccountingApp {
     static void loadData(){
 
         try{
-            FileReader fileReader = new FileReader("transactions.csv");
+            FileReader fileReader = new FileReader("star_stream_transactions.csv");
             BufferedReader bufRead = new BufferedReader(fileReader);
             bufRead.readLine(); // Clears the header
             String line = bufRead.readLine();
@@ -89,17 +89,49 @@ public class AccountingApp {
         }
     }
     static void displayHomeMenu(){}
+
     static void addDeposit(){}
     static void makePayment(){}
-    static void displayLedgerMenu(){}
+    static void displayLedgerMenu(){
+        println("""
+                ------------------------------------------------------------------------------------------
+                
+                                                        Menu Options
+                                                   (A) Show All Transactions
+                                                   (D)    Show Deposits
+                                                   (P)    Show Payments
+                                                   (R)  Generate Reports
+                                                   (H)    Back to Home
+                                                  
+                ------------------------------------------------------------------------------------------""");
+    }
     static void showAllTransaction(){
-        System.out.printf("%-10s | %-8s | %-20s | %-20s | %s", "Date",
+        System.out.printf("%-10s | %-10s | %-30s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data: transactionList)
-        System.out.printf("%-10s | %-8s | %-20s | %-20s | %.2f\n", data.getDate(),
+        System.out.printf("%-10s | %-10s | %-30s | %-35s | %.2f\n", data.getDate(),
                 data.getTime(), data.getDescription(), data.getVendor(), data.getAmount());
     }
-    static void showDeposits(){}
-    static void showPayments(){}
+    static void showDeposits(){
+
+        System.out.printf("%-10s | %-10s | %-30s | %-35s | %s", "Date",
+                "Time", "Description", "Vendor", "Amount\n");
+        for (Transaction data : transactionList){
+            if (data.getAmount() > 0){
+                System.out.printf("%-10s | %-10s | %-30s | %-35s | %.2f\n", data.getDate(),
+                        data.getTime(), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+        }
+    }
+    static void showPayments(){
+        System.out.printf("%-10s | %-10s | %-30s | %-35s | %s", "Date",
+                "Time", "Description", "Vendor", "Amount\n");
+        for (Transaction data : transactionList){
+            if (data.getAmount() < 0){
+                System.out.printf("%-10s | %-10s | %-30s | %-35s | %.2f\n", data.getDate(),
+                        data.getTime(), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+        }
+    }
     static void chooseReports(){}
 }
