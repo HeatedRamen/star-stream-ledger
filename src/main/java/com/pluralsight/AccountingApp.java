@@ -14,6 +14,9 @@ public class AccountingApp {
     static Scanner input = new Scanner(System.in);
     static ArrayList<Transaction> transactionList = new ArrayList<>();
 
+    static DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    static DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+
     public static void main(String[] args) {
 
         boolean isRunning = true, inLedger, inReport;
@@ -138,7 +141,7 @@ public class AccountingApp {
         println("""
                 ------------------------------------------------------------------------------------------
                 
-                                                        Menu Options
+                                                     Menu Options
                                                    (D) Make Deposit
                                                    (P) Make Payment
                                                    (L) Ledger
@@ -199,10 +202,6 @@ public class AccountingApp {
     }
     static void logTransaction(Transaction userDeposit){
 
-        // Format for date / time
-        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-
         try{
             FileWriter fileWriter = new FileWriter("star_stream_transactions.csv", true);
             BufferedWriter bufWrite = new BufferedWriter(fileWriter);
@@ -231,10 +230,6 @@ public class AccountingApp {
     }
     static void showAllTransaction(){
 
-        // Format for date / time
-        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data: transactionList) {
@@ -243,11 +238,6 @@ public class AccountingApp {
         }
     }
     static void showDeposits(){
-
-        // Format for date / time
-        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-
 
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
@@ -259,10 +249,6 @@ public class AccountingApp {
         }
     }
     static void showPayments(){
-
-        // Format for date / time
-        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
@@ -291,11 +277,64 @@ public class AccountingApp {
     static void sortTransactions(){
         transactionList.sort((a, b) -> b.getDateTime().compareTo(a.getDateTime()));
     }
-    static void displayMonthToDate(){}
-    static void displayPreviousMonth(){}
-    static void displayYearToDate(){}
-    static void displayPreviousYear(){}
-    static void promptVendorSearch(){}
+    static void displayMonthToDate(){
+
+        LocalDateTime timeNow = LocalDateTime.now();
+
+        for (Transaction data : transactionList){
+            if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+
+            }
+        }
+
+    static void displayPreviousMonth(){
+
+        LocalDateTime timeNow = LocalDateTime.now().minusMonths(1);
+
+        for (Transaction data : transactionList) {
+            if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+        }
+    }
+    static void displayYearToDate(){
+
+        LocalDateTime timeNow = LocalDateTime.now();
+
+        for (Transaction data : transactionList) {
+            if (timeNow.getYear() == data.getDateTime().getYear()) {
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+        }
+    }
+    static void displayPreviousYear(){
+
+        LocalDateTime timeNow = LocalDateTime.now().minusYears(1);
+
+        for (Transaction data : transactionList) {
+            if (timeNow.getYear() == data.getDateTime().getYear()) {
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+        }
+    }
+    static void promptVendorSearch(){
+        //
+        println("What is the name of the vendor you're looking for");
+        String userVendor = input.nextLine();
+
+        for (Transaction data : transactionList) {
+            if (userVendor.equalsIgnoreCase(data.getVendor())){
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            }
+        }
+    }
     static void promptCustomSearch(){}
 
     static void println(String message){
