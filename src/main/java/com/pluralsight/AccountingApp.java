@@ -4,10 +4,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -55,7 +54,7 @@ public class AccountingApp {
                                 showPayments();
                                 break;
                             case "r":
-                                chooseReports();
+                                displayReportMenu();
                                 break;
                             case "h":
                                 inLedger = false;
@@ -91,7 +90,7 @@ public class AccountingApp {
             while(line != null){
                 // Split the string and add it into transactions arraylist
                 parsedData = line.split("\\|");
-                transactionList.add(new Transaction(parsedData[0], parsedData[1], parsedData[2], parsedData[3],Double.parseDouble(parsedData[4])));
+                transactionList.add(new Transaction(LocalDate.parse(parsedData[0]), LocalTime.parse(parsedData[1]), parsedData[2], parsedData[3], Long.parseLong(parsedData[4])));
                 line = bufRead.readLine();
             }
         }catch (Exception e){
@@ -105,10 +104,10 @@ public class AccountingApp {
                 ------------------------------------------------------------------------------------------
                 
                                                         Menu Options
-                                                   (D)  Make Deposit
-                                                   (P)  Make Payment
-                                                   (L)     Ledger
-                                                   (X)      Exit
+                                                   (D) Make Deposit
+                                                   (P) Make Payment
+                                                   (L) Ledger
+                                                   (X) Exit
                 
                 ------------------------------------------------------------------------------------------""");
     }
@@ -124,10 +123,6 @@ public class AccountingApp {
     }
     static Transaction promptDeposit(){
 
-        // Format for date / time
-        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-
         // Fetch current date time and prompt user for deposit details
         ZonedDateTime depositTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
 
@@ -136,10 +131,10 @@ public class AccountingApp {
         println("What is your constellation modifier?");
         String vendor = input.nextLine().trim();
         println("How many coins would like to deposit?");
-        double amount = input.nextDouble();
+        long amount = input.nextLong();
         input.nextLine(); // Clears buffer
 
-        Transaction userDeposit = new Transaction(depositTime.format(logDateFormat), depositTime.format(logTimeFormat), description, vendor, amount);
+        Transaction userDeposit = new Transaction(depositTime.toLocalDate(), depositTime.toLocalTime(), description, vendor, amount);
         return userDeposit;
     }
     static void makePayment(){
@@ -153,10 +148,6 @@ public class AccountingApp {
     }
     static Transaction promptPayment(){
 
-        // Format for date / time
-        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-
         // Fetch current date time and prompt user for deposit details
         ZonedDateTime depositTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
 
@@ -165,10 +156,10 @@ public class AccountingApp {
         println("Which Dokkaebi is receiving your payment?");
         String vendor = input.nextLine().trim();
         println("How many coins would like to pay?");
-        double amount = input.nextDouble();
+        long amount = input.nextLong();
         input.nextLine(); // Clears buffer
 
-        Transaction userPayment = new Transaction(depositTime.format(logDateFormat), depositTime.format(logTimeFormat), description, vendor, -amount);
+        Transaction userPayment = new Transaction(depositTime.toLocalDate(), depositTime.toLocalTime(), description, vendor, -amount);
         return userPayment;
     }
     static void logTransaction(Transaction userDeposit){
@@ -192,41 +183,70 @@ public class AccountingApp {
                 
                                                         Menu Options
                                                    (A) Show All Transactions
-                                                   (D)    Show Deposits
-                                                   (P)    Show Payments
-                                                   (R)  Generate Reports
-                                                   (H)    Back to Home
+                                                   (D) Show Deposits
+                                                   (P) Show Payments
+                                                   (R) Generate Reports
+                                                   (H) Back to Home
                 
                 ------------------------------------------------------------------------------------------""");
     }
     static void showAllTransaction(){
+
+        // Format for date / time
+        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data: transactionList) {
-            System.out.printf("%-10s | %-10s | %-35s | %-35s | %.2f\n", data.getDate(),
-                    data.getTime(), data.getDescription(), data.getVendor(), data.getAmount());
+            System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDate().format(logDateFormat),
+                    data.getTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
         }
     }
     static void showDeposits(){
+
+        // Format for date / time
+        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+
 
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data : transactionList){
             if (data.getAmount() > 0){
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %.2f\n", data.getDate(),
-                        data.getTime(), data.getDescription(), data.getVendor(), data.getAmount());
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDate().format(logDateFormat),
+                        data.getTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
     }
     static void showPayments(){
+
+        // Format for date / time
+        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data : transactionList){
             if (data.getAmount() < 0){
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %.2f\n", data.getDate(),
-                        data.getTime(), data.getDescription(), data.getVendor(), data.getAmount());
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDate().format(logDateFormat),
+                        data.getTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
     }
-    static void chooseReports(){}
+    static void displayReportMenu(){
+        println("""
+                ------------------------------------------------------------------------------------------
+                
+                                                       Report Options
+                                                   (1) Month - to - Date
+                                                   (2) Previous Month
+                                                   (3) Year - to - Date
+                                                   (4) Previous Year
+                                                   (5) Search by Vendor
+                                                   (6) Custom
+                                                   (0) Exit
+                
+                ------------------------------------------------------------------------------------------""");
+    }
 }
