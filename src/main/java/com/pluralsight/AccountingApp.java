@@ -432,8 +432,9 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
 
             // One HUGE if statement that checks if the user input is empty / null OR equal to the transaction data
-            if ((startDate == null || (!data.getDateTime().isAfter(startDate))) &&
-                    (endDate == null || (!data.getDateTime().isBefore(endDate))) &&
+            // used !Before Start Date and !After End Date to be inclusive for the input dates
+            if ((startDate == null || (!data.getDateTime().isBefore(startDate))) &&
+                    (endDate == null || (!data.getDateTime().isAfter(endDate))) &&
                     (userDescription.isEmpty() || (userDescription.equalsIgnoreCase(data.getDescription()))) &&
                     (userVendor.isEmpty() || (userVendor.equalsIgnoreCase(data.getVendor()))) &&
                     (minAmount == null || data.getAmount() >= minAmount) &&
@@ -443,7 +444,6 @@ public class AccountingApp {
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
-
     }
 
     static void println(String message) {
