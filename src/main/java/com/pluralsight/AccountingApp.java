@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,8 +16,8 @@ public class AccountingApp {
 
     public static void main(String[] args) {
 
-        boolean isRunning = true, inLedger;
-        String userChoice, ledgerChoice;
+        boolean isRunning = true, inLedger, inReport;
+        String userChoice, ledgerChoice, reportChoice;
 
         // Read data from .csv and load into an ArrayList
         loadData();
@@ -38,11 +37,15 @@ public class AccountingApp {
                     makePayment();
                     break;
                 case "l":
+
+                    // Sorting Arraylist in descending / by newest
+                    sortTransactions();
                     inLedger = true;
 
                     while(inLedger) {
                         displayLedgerMenu();
                         ledgerChoice = input.nextLine().toLowerCase();
+
                         switch (ledgerChoice) {
                             case "a":
                                 showAllTransaction();
@@ -54,7 +57,38 @@ public class AccountingApp {
                                 showPayments();
                                 break;
                             case "r":
-                                displayReportMenu();
+                                inReport = true;
+
+                                while (inReport) {
+                                    displayReportMenu();
+                                    reportChoice = input.nextLine();
+
+                                    switch (reportChoice){
+                                        case "1":
+                                            displayMonthToDate();
+                                            break;
+                                        case "2":
+                                            displayPreviousMonth();
+                                            break;
+                                        case "3":
+                                            displayYearToDate();
+                                            break;
+                                        case "4":
+                                            displayPreviousYear();
+                                            break;
+                                        case "5":
+                                            promptVendorSearch();
+                                            break;
+                                        case "6":
+                                            promptCustomSearch();
+                                            break;
+                                        case "0":
+                                            inReport = false;
+                                            break;
+                                        default:
+                                            println("Invalid Option... TRY AGAIN >:(");
+                                    }
+                                }
                                 break;
                             case "h":
                                 inLedger = false;
@@ -73,13 +107,13 @@ public class AccountingApp {
             }
         }while(isRunning);
     }
-    static void println(String message){
-        System.out.println(message);
-    }
+
     static void loadData(){
 
-        try{
+        // Format so String to DateTime can read
+        DateTimeFormatter logDateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+        try{
             // Opens and reads files
             FileReader fileReader = new FileReader("star_stream_transactions.csv");
             BufferedReader bufRead = new BufferedReader(fileReader);
@@ -90,7 +124,8 @@ public class AccountingApp {
             while(line != null){
                 // Split the string and add it into transactions arraylist
                 parsedData = line.split("\\|");
-                transactionList.add(new Transaction(LocalDate.parse(parsedData[0]), LocalTime.parse(parsedData[1]), parsedData[2], parsedData[3], Long.parseLong(parsedData[4])));
+                LocalDateTime dateTime = LocalDateTime.parse(parsedData[0] + " " + parsedData[1], logDateTimeFormat);
+                transactionList.add(new Transaction(dateTime, parsedData[2], parsedData[3], Long.parseLong(parsedData[4])));
                 line = bufRead.readLine();
             }
         }catch (Exception e){
@@ -134,7 +169,7 @@ public class AccountingApp {
         long amount = input.nextLong();
         input.nextLine(); // Clears buffer
 
-        Transaction userDeposit = new Transaction(depositTime.toLocalDate(), depositTime.toLocalTime(), description, vendor, amount);
+        Transaction userDeposit = new Transaction(depositTime.toLocalDateTime(), description, vendor, amount);
         return userDeposit;
     }
     static void makePayment(){
@@ -159,17 +194,21 @@ public class AccountingApp {
         long amount = input.nextLong();
         input.nextLine(); // Clears buffer
 
-        Transaction userPayment = new Transaction(depositTime.toLocalDate(), depositTime.toLocalTime(), description, vendor, -amount);
+        Transaction userPayment = new Transaction(depositTime.toLocalDateTime(), description, vendor, -amount);
         return userPayment;
     }
     static void logTransaction(Transaction userDeposit){
+
+        // Format for date / time
+        DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter logTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         try{
             FileWriter fileWriter = new FileWriter("star_stream_transactions.csv", true);
             BufferedWriter bufWrite = new BufferedWriter(fileWriter);
 
-            bufWrite.write(userDeposit.getDate() +"|" +userDeposit.getTime() + "|" + userDeposit.getDescription()
-                            + "|" + userDeposit.getVendor() +"|" + userDeposit.getAmount() +"\n");
+            bufWrite.write(userDeposit.getDateTime().format(logDateFormat) +"|" +userDeposit.getDateTime().format(logTimeFormat) + "|" +
+                               userDeposit.getDescription() + "|" + userDeposit.getVendor() +"|" + userDeposit.getAmount() +"\n");
             bufWrite.close();
 
         } catch (Exception e) {
@@ -199,8 +238,8 @@ public class AccountingApp {
         System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data: transactionList) {
-            System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDate().format(logDateFormat),
-                    data.getTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                    data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
         }
     }
     static void showDeposits(){
@@ -214,8 +253,8 @@ public class AccountingApp {
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data : transactionList){
             if (data.getAmount() > 0){
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDate().format(logDateFormat),
-                        data.getTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
     }
@@ -229,8 +268,8 @@ public class AccountingApp {
                 "Time", "Description", "Vendor", "Amount\n");
         for (Transaction data : transactionList){
             if (data.getAmount() < 0){
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDate().format(logDateFormat),
-                        data.getTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
     }
@@ -248,5 +287,18 @@ public class AccountingApp {
                                                    (0) Exit
                 
                 ------------------------------------------------------------------------------------------""");
+    }
+    static void sortTransactions(){
+        transactionList.sort((a, b) -> b.getDateTime().compareTo(a.getDateTime()));
+    }
+    static void displayMonthToDate(){}
+    static void displayPreviousMonth(){}
+    static void displayYearToDate(){}
+    static void displayPreviousYear(){}
+    static void promptVendorSearch(){}
+    static void promptCustomSearch(){}
+
+    static void println(String message){
+        System.out.println(message);
     }
 }

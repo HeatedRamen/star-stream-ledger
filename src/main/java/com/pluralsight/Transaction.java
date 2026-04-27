@@ -1,29 +1,23 @@
 package com.pluralsight;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+
+import java.time.LocalDateTime;
 
 public class Transaction {
-    private LocalDate date;
-    private LocalTime time;
+    private LocalDateTime dateTime;
     private String description;
     private String vendor;
     private long coins;
 
-    Transaction(LocalDate date, LocalTime time, String description, String vendor, long price) {
-        this.date = date;
-        this.time = time;
+    Transaction(LocalDateTime currentDateTime, String description, String vendor, long price) {
+        this.dateTime = currentDateTime;
         this.description = description;
         this.vendor = vendor;
         this.coins = price;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public LocalTime getTime() {
-        return time;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public String getDescription() {
