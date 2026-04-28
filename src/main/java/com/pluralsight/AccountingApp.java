@@ -31,7 +31,7 @@ public class AccountingApp {
         do {
             // Displays home menu and prompt user for menu selection
             displayHomeMenu();
-            userChoice = input.nextLine().toLowerCase();
+            userChoice = input.nextLine().toLowerCase().trim();
 
             // Switch case for menu option and invalid input for default
             switch (userChoice) {
@@ -49,7 +49,7 @@ public class AccountingApp {
                     // Displays Ledger menu and prompt user for ledger selection and continuous loop until user command exits
                     while (inLedger) {
                         displayLedgerMenu();
-                        ledgerChoice = input.nextLine().toLowerCase();
+                        ledgerChoice = input.nextLine().toLowerCase().trim();
 
                         // Switch case for the ledger options and invalid input for default
                         switch (ledgerChoice) {
@@ -68,7 +68,7 @@ public class AccountingApp {
                                 // Displays Ledger menu and prompt user for ledger selection and continuous loop until user command exits
                                 while (inReport) {
                                     displayReportMenu();
-                                    reportChoice = input.nextLine();
+                                    reportChoice = input.nextLine().trim();
 
                                     // Switch case for report options and invalid input for default
                                     switch (reportChoice) {
@@ -147,15 +147,49 @@ public class AccountingApp {
     static void displayHomeMenu() {
         // Basic menu for now
         println("""
-                ------------------------------------------------------------------------------------------
-                
-                                                     Menu Options
-                                                   (D) Make Deposit
-                                                   (P) Make Payment
-                                                   (L) Ledger
-                                                   (X) Exit
-                
-                ------------------------------------------------------------------------------------------""");
+                +------------------------------------------------------------------------------------------+
+                |                                                                                          |
+                |                                        Menu Options                              (•ᴗ•)   |
+                |                                   (D) Make Deposit                               /   \\   |
+                |                                   (P) Make Payment                                \\_/    |
+                |                                   (L) Ledger                                             |
+                |                                   (X) Exit                                               |
+                |                                                                                          |
+                +------------------------------------------------------------------------------------------+""");
+    }
+
+    static void displayLedgerMenu() {
+
+        // Basic print menu for now
+        println("""
+                +------------------------------------------------------------------------------------------+
+                |                                                                                          |
+                |                                        Menu Options                              (•ᴗ•)   |
+                |                                   (A) Show All Transactions                      /   \\   |
+                |                                   (D) Show Deposits                               \\_/    |
+                |                                   (P) Show Payments                                      |
+                |                                   (R) Generate Reports                                   |
+                |                                   (H) Back to Home                                       |
+                |                                                                                          |
+                +------------------------------------------------------------------------------------------+""");
+    }
+
+    static void displayReportMenu() {
+
+        // Basic print menu for now
+        println("""
+                +------------------------------------------------------------------------------------------+
+                |                                                                                          |
+                |                                      Report Options                              (•ᴗ•)   |
+                |                                   (1) Month - to - Date                          /   \\   |
+                |                                   (2) Previous Month                              \\_/    |
+                |                                   (3) Year - to - Date                                   |
+                |                                   (4) Previous Year                                      |
+                |                                   (5) Search by Vendor                                   |
+                |                                   (6) Custom                                             |
+                |                                   (0) Exit                                               |
+                |                                                                                          |
+                +------------------------------------------------------------------------------------------+""");
     }
 
     static void addDeposit() {
@@ -233,26 +267,11 @@ public class AccountingApp {
         }
     }
 
-    static void displayLedgerMenu() {
-
-        // Basic print menu for now
-        println("""
-                ------------------------------------------------------------------------------------------
-                
-                                                        Menu Options
-                                                   (A) Show All Transactions
-                                                   (D) Show Deposits
-                                                   (P) Show Payments
-                                                   (R) Generate Reports
-                                                   (H) Back to Home
-                
-                ------------------------------------------------------------------------------------------""");
-    }
 
     static void printHeader(){
 
         // Prints formatted header
-        System.out.printf("%-10s | %-10s | %-35s | %-35s | %s", "Date",
+        System.out.printf("%-10s | %-8s | %-35s | %-35s | %s", "Date",
                 "Time", "Description", "Vendor", "Amount\n");
     }
 
@@ -261,7 +280,7 @@ public class AccountingApp {
         // Prints header and goes through ArrayList and prints information into a table like manner
         printHeader();
         for (Transaction data : transactionList) {
-            System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+            System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                     data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
         }
     }
@@ -272,7 +291,7 @@ public class AccountingApp {
         printHeader();
         for (Transaction data : transactionList) {
             if (data.getAmount() > 0) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
@@ -284,28 +303,10 @@ public class AccountingApp {
         printHeader();
         for (Transaction data : transactionList) {
             if (data.getAmount() < 0) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
-    }
-
-    static void displayReportMenu() {
-
-        // Basic print menu for now
-        println("""
-                ------------------------------------------------------------------------------------------
-                
-                                                       Report Options
-                                                   (1) Month - to - Date
-                                                   (2) Previous Month
-                                                   (3) Year - to - Date
-                                                   (4) Previous Year
-                                                   (5) Search by Vendor
-                                                   (6) Custom
-                                                   (0) Exit
-                
-                ------------------------------------------------------------------------------------------""");
     }
 
     static void sortTransactions() {
@@ -323,7 +324,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to current month and year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
@@ -337,7 +338,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to the previous month and current year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
@@ -351,7 +352,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to current year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
@@ -365,7 +366,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to previous year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
@@ -375,12 +376,12 @@ public class AccountingApp {
 
         // Prompt user for vendor
         println("What is the name of the vendor you're looking for");
-        String userVendor = input.nextLine();
+        String userVendor = input.nextLine().trim();
 
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's vendor is equal to user supplied vendor and print out matches
             if (userVendor.equalsIgnoreCase(data.getVendor())) {
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
@@ -390,10 +391,11 @@ public class AccountingApp {
 
         // Basic looking custom search menu
         println("""
-                        ~~~~~~~~~~~~~~~CUSTOM SEARCH~~~~~~~~~~~~~~~
-                                   Press return to skip
-                What is the start date for your search? (yyyy-MM-dd)""");
+                +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CUSTOM  SEARCH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+                |                                    Press return to skip                                  |
+                +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+""");
         // Prompt user for search filters
+        println("What is the start date for your search? (yyyy-MM-dd)");
         String userStartDate = input.nextLine().trim();
         println("What is the end date for your search? (yyyy-MM-dd)");
         String userEndDate = input.nextLine().trim();
@@ -414,10 +416,10 @@ public class AccountingApp {
         try {
             // Always checks if the string isn't empty, if it is empty leave it as null
             if (!userStartDate.isEmpty()) {
-                startDate = LocalDateTime.parse(userStartDate, logDateFormat);
+                startDate = LocalDate.parse(userStartDate, logDateFormat).atStartOfDay();
             }
             if (!userEndDate.isEmpty()) {
-                endDate = LocalDateTime.parse(userEndDate, logDateFormat);
+                endDate = LocalDate.parse(userEndDate, logDateFormat).atTime(23, 59,59);
             }
             if (!userMinAmount.isEmpty()) {
                 minAmount = Integer.parseInt(userMinAmount);
@@ -427,6 +429,7 @@ public class AccountingApp {
             }
         } catch (Exception e){
             println("Invalid input");
+            return;
         }
 
         for (Transaction data : transactionList) {
@@ -440,7 +443,7 @@ public class AccountingApp {
                     (minAmount == null || data.getAmount() >= minAmount) &&
                     (maxAmount == null || data.getAmount() <= maxAmount)) {
 
-                System.out.printf("%-10s | %-10s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                         data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
             }
         }
