@@ -147,49 +147,49 @@ public class AccountingApp {
     static void displayHomeMenu() {
         // Basic menu for now
         println("""
-                +------------------------------------------------------------------------------------------+
-                |                                                                                          |
-                |                                        Menu Options                              (•ᴗ•)   |
-                |                                   (D) Make Deposit                               /   \\   |
-                |                                   (P) Make Payment                                \\_/    |
-                |                                   (L) Ledger                                             |
-                |                                   (X) Exit                                               |
-                |                                                                                          |
-                +------------------------------------------------------------------------------------------+""");
+                +----------------------------------------------------------------------------------------------------------+
+                |                                                                                                          |
+                |                                                Menu Options                                      (•ᴗ•)   |
+                |                                             (D) Make Deposit                                     /   \\   |
+                |                                             (P) Make Payment                                      \\_/    |
+                |                                             (L) Ledger                                                   |
+                |                                             (X) Exit                                                     |
+                |                                                                                                          |
+                +----------------------------------------------------------------------------------------------------------+""");
     }
 
     static void displayLedgerMenu() {
 
         // Basic print menu for now
         println("""
-                +------------------------------------------------------------------------------------------+
-                |                                                                                          |
-                |                                        Menu Options                              (•ᴗ•)   |
-                |                                   (A) Show All Transactions                      /   \\   |
-                |                                   (D) Show Deposits                               \\_/    |
-                |                                   (P) Show Payments                                      |
-                |                                   (R) Generate Reports                                   |
-                |                                   (H) Back to Home                                       |
-                |                                                                                          |
-                +------------------------------------------------------------------------------------------+""");
+                +----------------------------------------------------------------------------------------------------------+
+                |                                                                                                          |
+                |                                              Ledger Options                                      (•ᴗ•)   |
+                |                                         (A) Show All Transactions                                /   \\   |
+                |                                         (D) Show Deposits                                         \\_/    |
+                |                                         (P) Show Payments                                                |
+                |                                         (R) Generate Reports                                             |
+                |                                         (H) Back to Home                                                 |
+                |                                                                                                          |
+                +----------------------------------------------------------------------------------------------------------+""");
     }
 
     static void displayReportMenu() {
 
         // Basic print menu for now
         println("""
-                +------------------------------------------------------------------------------------------+
-                |                                                                                          |
-                |                                      Report Options                              (•ᴗ•)   |
-                |                                   (1) Month - to - Date                          /   \\   |
-                |                                   (2) Previous Month                              \\_/    |
-                |                                   (3) Year - to - Date                                   |
-                |                                   (4) Previous Year                                      |
-                |                                   (5) Search by Vendor                                   |
-                |                                   (6) Custom                                             |
-                |                                   (0) Exit                                               |
-                |                                                                                          |
-                +------------------------------------------------------------------------------------------+""");
+                +----------------------------------------------------------------------------------------------------------+
+                |                                                                                                          |
+                |                                              Report Options                                      (•ᴗ•)   |
+                |                                         (1) Month - to - Date                                    /   \\   |
+                |                                         (2) Previous Month                                        \\_/    |
+                |                                         (3) Year - to - Date                                             |
+                |                                         (4) Previous Year                                                |
+                |                                         (5) Search by Vendor                                             |
+                |                                         (6) Custom                                                       |
+                |                                         (0) Exit                                                         |
+                |                                                                                                          |
+                +----------------------------------------------------------------------------------------------------------+""");
     }
 
     static void addDeposit() {
@@ -320,6 +320,8 @@ public class AccountingApp {
         // Get current date time
         LocalDateTime timeNow = LocalDateTime.now();
 
+        // Display header
+        printHeader();
 
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to current month and year then print out matches
@@ -335,6 +337,9 @@ public class AccountingApp {
         // Get current date time but go back one month
         LocalDateTime timeNow = LocalDateTime.now().minusMonths(1);
 
+        // Display header
+        printHeader();
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to the previous month and current year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
@@ -349,6 +354,9 @@ public class AccountingApp {
         // Get current date time
         LocalDateTime timeNow = LocalDateTime.now();
 
+        // Display header
+        printHeader();
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to current year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
@@ -362,6 +370,9 @@ public class AccountingApp {
 
         // Get current date time but go back one year
         LocalDateTime timeNow = LocalDateTime.now().minusYears(1);
+
+        // Display header
+        printHeader();
 
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to previous year then print out matches
@@ -378,6 +389,9 @@ public class AccountingApp {
         println("What is the name of the vendor you're looking for");
         String userVendor = input.nextLine().trim();
 
+        // Display header
+        printHeader();
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's vendor is equal to user supplied vendor and print out matches
             if (userVendor.equalsIgnoreCase(data.getVendor())) {
@@ -391,9 +405,9 @@ public class AccountingApp {
 
         // Basic looking custom search menu
         println("""
-                +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CUSTOM  SEARCH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-                |                                    Press return to skip                                  |
-                +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+""");
+                +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CUSTOM  SEARCH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+                |                                           Press return to skip                                           |
+                +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+""");
         // Prompt user for search filters
         println("What is the start date for your search? (yyyy-MM-dd)");
         String userStartDate = input.nextLine().trim();
@@ -409,7 +423,7 @@ public class AccountingApp {
         String userMaxAmount = input.nextLine().trim();
 
         // To convert String into their respective variable
-        Integer minAmount = null, maxAmount = null;
+        Long minAmount = null, maxAmount = null;
         LocalDateTime startDate = null, endDate = null;
 
         // Try catch statement in case the user doesn't enter in valid input :P
@@ -422,15 +436,18 @@ public class AccountingApp {
                 endDate = LocalDate.parse(userEndDate, logDateFormat).atTime(23, 59,59);
             }
             if (!userMinAmount.isEmpty()) {
-                minAmount = Integer.parseInt(userMinAmount);
+                minAmount = Long.parseLong(userMinAmount);
             }
             if (!userMaxAmount.isEmpty()) {
-                maxAmount = Integer.parseInt(userMaxAmount);
+                maxAmount = Long.parseLong(userMaxAmount);
             }
         } catch (Exception e){
             println("Invalid input");
             return;
         }
+
+        // Display header
+        printHeader();
 
         for (Transaction data : transactionList) {
 
