@@ -103,7 +103,6 @@ public class AccountingApp {
                                 break;
                             default:
                                 println("Invalid Option... TRY AGAIN >:(");
-
                         }
                     }
                     break;
@@ -267,6 +266,10 @@ public class AccountingApp {
         }
     }
 
+    static void printTransaction (Transaction data){
+        System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+                data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+    }
 
     static void printHeader(){
 
@@ -280,8 +283,7 @@ public class AccountingApp {
         // Prints header and goes through ArrayList and prints information into a table like manner
         printHeader();
         for (Transaction data : transactionList) {
-            System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                    data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+            printTransaction(data);
         }
     }
 
@@ -291,8 +293,7 @@ public class AccountingApp {
         printHeader();
         for (Transaction data : transactionList) {
             if (data.getAmount() > 0) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -303,8 +304,7 @@ public class AccountingApp {
         printHeader();
         for (Transaction data : transactionList) {
             if (data.getAmount() < 0) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -326,8 +326,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to current month and year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -343,8 +342,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to the previous month and current year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -360,8 +358,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to current year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -377,8 +374,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to previous year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -395,8 +391,7 @@ public class AccountingApp {
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's vendor is equal to user supplied vendor and print out matches
             if (userVendor.equalsIgnoreCase(data.getVendor())) {
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                printTransaction(data);
             }
         }
     }
@@ -446,6 +441,13 @@ public class AccountingApp {
             return;
         }
 
+        // Check for valid ranges
+        if((startDate != null && endDate != null && startDate.isAfter(endDate)) ||
+                (minAmount != null && maxAmount != null && minAmount > maxAmount)){
+            println("Invalid Range... GO TRY AGAIN");
+            return;
+        }
+
         // Display header
         printHeader();
 
@@ -457,11 +459,9 @@ public class AccountingApp {
                     (endDate == null || (!data.getDateTime().isAfter(endDate))) &&
                     (userDescription.isEmpty() || (userDescription.equalsIgnoreCase(data.getDescription()))) &&
                     (userVendor.isEmpty() || (userVendor.equalsIgnoreCase(data.getVendor()))) &&
-                    (minAmount == null || data.getAmount() >= minAmount) &&
-                    (maxAmount == null || data.getAmount() <= maxAmount)) {
-
-                System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
-                        data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
+                    (minAmount == null || Math.abs(data.getAmount()) >= minAmount) &&
+                    (maxAmount == null || Math.abs(data.getAmount()) <= maxAmount)) {
+                printTransaction(data);
             }
         }
     }
