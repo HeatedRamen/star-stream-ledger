@@ -190,6 +190,15 @@ public class AccountingApp {
                 |                                                                                                          |
                 +----------------------------------------------------------------------------------------------------------+""");
     }
+    static void displayResults(int numTransactions, long netDeposit, long netPayment){
+        println("===========================================================================================================");
+        if (numTransactions > 0) {
+            println("                                           Total transactions: " + numTransactions);
+            println("                                           Net Deposits: " + netDeposit);
+            println("                                           Net Payments: " + netPayment);
+        } else println("                                            No transactions found");
+        println("===========================================================================================================");
+    }
 
     static void addDeposit() {
 
@@ -247,7 +256,7 @@ public class AccountingApp {
         return new Transaction(depositTime.toLocalDateTime(), description, vendor, -amount);
     }
 
-    static void logTransaction(Transaction userDeposit) {
+    static void logTransaction(Transaction userTransaction) {
 
         try {
             // Opening Buffered Writer and making sure to append
@@ -255,8 +264,8 @@ public class AccountingApp {
             BufferedWriter bufWrite = new BufferedWriter(fileWriter);
 
             // Writing to match the formatting of the .csv file
-            bufWrite.write(userDeposit.getDateTime().format(logDateFormat) + "|" + userDeposit.getDateTime().format(logTimeFormat) + "|" +
-                    userDeposit.getDescription() + "|" + userDeposit.getVendor() + "|" + userDeposit.getAmount() + "\n");
+            bufWrite.write(userTransaction.getDateTime().format(logDateFormat) + "|" + userTransaction.getDateTime().format(logTimeFormat) + "|" +
+                    userTransaction.getDescription() + "|" + userTransaction.getVendor() + "|" + userTransaction.getAmount() + "\n");
             bufWrite.close(); // Close write
 
         }
@@ -267,15 +276,15 @@ public class AccountingApp {
     }
 
     static void printTransaction (Transaction data){
-        System.out.printf("%-10s | %-8s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
+        System.out.printf("%s | %s | %-35s | %-35s | %d\n", data.getDateTime().format(logDateFormat),
                 data.getDateTime().format(logTimeFormat), data.getDescription(), data.getVendor(), data.getAmount());
     }
 
     static void printHeader(){
 
         // Prints formatted header
-        System.out.printf("%-10s | %-8s | %-35s | %-35s | %s", "Date",
-                "Time", "Description", "Vendor", "Amount\n");
+        System.out.printf("%-10s | %-8s | %-35s | %-35s | %s\n", "Date",
+                "Time", "Description", "Vendor", "Amount");
     }
 
     static void showAllTransaction() {
@@ -323,12 +332,26 @@ public class AccountingApp {
         // Display header
         printHeader();
 
+        int counter = 0;
+        long netDeposit = 0, netPayment = 0;
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to current month and year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
                 printTransaction(data);
+
+                // Report tracker
+                counter++ ;
+                if (data.getAmount() > 0){
+                    netDeposit += data.getAmount();
+                } else if (data.getAmount() < 0) {
+                    netPayment += Math.abs(data.getAmount());
+                }
             }
         }
+
+        // Display report
+        displayResults(counter, netDeposit, netPayment);
     }
 
     static void displayPreviousMonth() {
@@ -339,12 +362,26 @@ public class AccountingApp {
         // Display header
         printHeader();
 
+        int counter = 0;
+        long netDeposit = 0, netPayment = 0;
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's month is equal to the previous month and current year then print out matches
             if (timeNow.getMonth() == data.getDateTime().getMonth() && timeNow.getYear() == data.getDateTime().getYear()) {
                 printTransaction(data);
+
+                // Report tracker
+                counter++;
+                if (data.getAmount() > 0){
+                    netDeposit += data.getAmount();
+                } else if (data.getAmount() < 0) {
+                    netPayment += Math.abs(data.getAmount());
+                }
             }
         }
+
+        // Display report
+        displayResults(counter, netDeposit, netPayment);
     }
 
     static void displayYearToDate() {
@@ -355,12 +392,24 @@ public class AccountingApp {
         // Display header
         printHeader();
 
+        int counter = 0;
+        long netDeposit = 0, netPayment = 0;
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to current year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
                 printTransaction(data);
+
+                // Report tracker
+                counter++;
+                if (data.getAmount() > 0){
+                    netDeposit += data.getAmount();
+                } else if (data.getAmount() < 0) {
+                    netPayment += Math.abs(data.getAmount());
+                }
             }
         }
+        displayResults(counter, netDeposit, netPayment);
     }
 
     static void displayPreviousYear() {
@@ -371,29 +420,53 @@ public class AccountingApp {
         // Display header
         printHeader();
 
+        int counter = 0;
+        long netDeposit = 0, netPayment = 0;
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's year is equal to previous year then print out matches
             if (timeNow.getYear() == data.getDateTime().getYear()) {
                 printTransaction(data);
+
+                // Report tracker
+                counter++;
+                if (data.getAmount() > 0){
+                    netDeposit += data.getAmount();
+                } else if (data.getAmount() < 0) {
+                    netPayment += Math.abs(data.getAmount());
+                }
             }
         }
+        displayResults(counter, netDeposit, netPayment);
     }
 
     static void promptVendorSearch() {
 
         // Prompt user for vendor
         println("What is the name of the vendor you're looking for");
-        String userVendor = input.nextLine().trim();
+        String userVendor = input.nextLine().trim().toLowerCase();
 
         // Display header
         printHeader();
 
+        int counter = 0;
+        long netDeposit = 0, netPayment = 0;
+
         for (Transaction data : transactionList) {
             // Make comparison if transaction data's vendor is equal to user supplied vendor and print out matches
-            if (userVendor.equalsIgnoreCase(data.getVendor())) {
+            if (data.getVendor().toLowerCase().contains(userVendor)) {
                 printTransaction(data);
+
+                // Report tracker
+                counter++;
+                if (data.getAmount() > 0){
+                    netDeposit += data.getAmount();
+                } else if (data.getAmount() < 0) {
+                    netPayment += Math.abs(data.getAmount());
+                }
             }
         }
+        displayResults(counter, netDeposit, netPayment);
     }
 
     static void promptCustomSearch() {
@@ -403,15 +476,16 @@ public class AccountingApp {
                 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CUSTOM  SEARCH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
                 |                                           Press return to skip                                           |
                 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+""");
+
         // Prompt user for search filters
         println("What is the start date for your search? (yyyy-MM-dd)");
         String userStartDate = input.nextLine().trim();
         println("What is the end date for your search? (yyyy-MM-dd)");
         String userEndDate = input.nextLine().trim();
         println("What is the description for your transaction?");
-        String userDescription = input.nextLine().trim();
+        String userDescription = input.nextLine().trim().toLowerCase();
         println("What is the vendor for your transaction?");
-        String userVendor = input.nextLine().trim();
+        String userVendor = input.nextLine().trim().toLowerCase();
         println("What is the minimum range for your transaction?");
         String userMinAmount = input.nextLine().trim();
         println("What is the maximum range for your transaction?");
@@ -428,7 +502,7 @@ public class AccountingApp {
                 startDate = LocalDate.parse(userStartDate, logDateFormat).atStartOfDay();
             }
             if (!userEndDate.isEmpty()) {
-                endDate = LocalDate.parse(userEndDate, logDateFormat).atTime(23, 59,59);
+                endDate = LocalDate.parse(userEndDate, logDateFormat).atTime(23, 59, 59);
             }
             if (!userMinAmount.isEmpty()) {
                 minAmount = Long.parseLong(userMinAmount);
@@ -436,14 +510,14 @@ public class AccountingApp {
             if (!userMaxAmount.isEmpty()) {
                 maxAmount = Long.parseLong(userMaxAmount);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             println("Invalid input");
             return;
         }
 
         // Check for valid ranges
-        if((startDate != null && endDate != null && startDate.isAfter(endDate)) ||
-                (minAmount != null && maxAmount != null && minAmount > maxAmount)){
+        if ((startDate != null && endDate != null && startDate.isAfter(endDate)) ||
+                (minAmount != null && maxAmount != null && minAmount > maxAmount)) {
             println("Invalid Range... GO TRY AGAIN");
             return;
         }
@@ -451,19 +525,32 @@ public class AccountingApp {
         // Display header
         printHeader();
 
+        int counter = 0;
+        long netDeposit = 0, netPayment = 0;
         for (Transaction data : transactionList) {
 
             // One HUGE if statement that checks if the user input is empty / null OR equal to the transaction data
             // used !Before Start Date and !After End Date to be inclusive for the input dates
             if ((startDate == null || (!data.getDateTime().isBefore(startDate))) &&
                     (endDate == null || (!data.getDateTime().isAfter(endDate))) &&
-                    (userDescription.isEmpty() || (userDescription.equalsIgnoreCase(data.getDescription()))) &&
-                    (userVendor.isEmpty() || (userVendor.equalsIgnoreCase(data.getVendor()))) &&
+                    (userDescription.isEmpty() || (data.getDescription().toLowerCase().contains(userDescription))) &&
+                    (userVendor.isEmpty() || (data.getVendor().toLowerCase().contains(userVendor))) &&
                     (minAmount == null || Math.abs(data.getAmount()) >= minAmount) &&
                     (maxAmount == null || Math.abs(data.getAmount()) <= maxAmount)) {
                 printTransaction(data);
+
+                // Report tracker
+                counter++;
+                if (data.getAmount() > 0){
+                    netDeposit += data.getAmount();
+                } else if (data.getAmount() < 0) {
+                    netPayment += Math.abs(data.getAmount());
+                }
             }
         }
+
+        // Display report
+        displayResults(counter, netDeposit, netPayment);
     }
 
     static void println(String message) {
