@@ -51,7 +51,7 @@ Home Screen with add deposits / payments functionalities, ledger for all transac
 ![Home / Main Menu](https://github.com/user-attachments/assets/f8ea2644-a613-40c7-83aa-792f7aa528e2)
 
 #### Deposit Function
-Deposit functionality that prompts for description / reason, "constellation modifier" or name, and the amount of coins for the deposit
+Deposit functionality that prompts for description / reason, "constellation modifier" or name, and the amount of coins for the deposit  
 ![Deposit Example](https://github.com/user-attachments/assets/cb91b04d-a7ad-41af-9540-25ce8b77f45e)
 
 #### Ledger Display Format
