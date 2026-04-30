@@ -3,20 +3,16 @@
 <details>
   <summary> <h2> Table of Contents</h2> </summary>
     <ol>
-      <li> Overview </li>
       <li> Description </li>
       <li> Features </li>
+      <li> Tech Stack </li>
       <li> How to Run </li>
       <li> Examples </li>
       <li> Author </li>
     </ol>
 </details>
-  
-### Overview 
-This is a Java application that allows the users (Dokkaebis) to manage transactions that happen across the dimensions, such as purchases from the coin shop or gift to incarnations from the constellations. 
-
-
-### Descriptions
+ 
+### Description
 This Java application reads from a .csv files, stores the transactions in memory, allows the user to add new transactions (Deposits / Payments), and provide various ways to view and filter the financial transaction data. 
 
 The program has a focus on using menus to guide the user through different options for each functionality.
@@ -36,6 +32,12 @@ The program has a focus on using menus to guide the user through different optio
   - Vendor
   - Amount Range
 - Save new transactions into the .csv file
+
+### Tech Stack
+* Java
+* Object Oriented Programming
+* File I/O (CSV handling)
+* Console based UI
 
 ### How to Run
 1. Clone or download the project
@@ -65,9 +67,5 @@ Filters all the transactions based on user input and allows for user to skip cer
 ![Custom Search Example](https://github.com/user-attachments/assets/238a8366-2de9-414f-9112-ac32c0b83be3)
 
 ### Author
-
 #### Kevin Nguyen 
-
-Contact Me by:  
 Email: knguyen@my.yearupunited.org  
-~~IG: heated_ramen~~
